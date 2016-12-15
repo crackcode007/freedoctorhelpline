@@ -24,13 +24,18 @@ router.post('/sign_in',function(req,res){
     }).then(function (data) {
         console.log("25 >>>>>>>>>>> ",data)
         if(data){
-            res.render('home');
+            req.path = "/home"
+            res.redirect('/home')
         }
         else{
             res.send("You are not registered !!")
         }
     })
 })
+
+router.all('/home', function (req, res) {
+    res.render('freedoctorhelpline');
+});
 
 
 function validateUser(params, db) {
@@ -57,6 +62,8 @@ function findAlreadySignUpUser(params, db) {
     })
     return d.promise;
 }
+
+
 
 
 module.exports = router;
