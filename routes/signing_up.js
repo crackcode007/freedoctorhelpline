@@ -6,6 +6,7 @@ var ObjectID = require("mongodb").ObjectID
 //var popup = require('window-popup').windowPopup;
 //var popupS = require('popups');
 var paramsProvided = {}
+var validateReturnData;
 
 router.post('/', function (req, res) {
     var db = req.app.locals.db
@@ -19,18 +20,23 @@ router.post('/', function (req, res) {
             return validateUser(params, db)
         }
     }).then(function (data) {
+        validateReturnData = data
         console.log("data >> >>> >>> >> 20 " + JSON.stringify(data))
         if (data) {
             //req.path = "/signing_up/home"
-            req.path = "/home"
-            res.redirect('/home')
             return saveUserConnection(paramsProvided, res, db)
         }
         else {
             res.render('already_exist');
         }
     }).then(function(token){
-        res.cookie("token", token);
+        console.log("33")
+        if(validateReturnData){
+            console.log("35")
+            res.cookie("token", token, { maxAge: 10*60*1000 });
+            res.redirect('/home')
+            res.path('/home')
+        }
     })
 })
 

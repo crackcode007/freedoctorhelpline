@@ -33,8 +33,18 @@ router.post('/sign_in',function(req,res){
     })
 })
 
-router.all('/home', function (req, res) {
-    res.render('freedoctorhelpline');
+router.get('/home', function (req, res) {
+    console.log("cookieeeeeeeee >>>>>>>>>",req.cookies)
+    var db = req.app.locals.db
+    return validatingUserToken(req,db).then(function(data){
+        printValue("40",data)
+        if(data && data._id){
+            res.render('freedoctorhelpline');
+        }
+        else{
+            res.render('index');
+        }
+    })
 });
 
 
@@ -62,8 +72,26 @@ function findAlreadySignUpUser(params, db) {
     })
     return d.promise;
 }
+function validatingUserToken(req, db) {
+    var d = q.defer()
+    printValue("77",req.body)
+    printValue("77",req.params)
+    if(req && req.cookies && req.cookies.token){
+        printValue("78")
+        db.collection('pl.connections').findOne({token: req.cookies.token}, function (err, doc) {
+            console.log(" 125 >> >> >> >>" + JSON.stringify(doc))
+            d.resolve(doc)
+        })
+    }
+    else{
+        d.resolve()
+    }
+    return d.promise;
+}
 
-
+function printValue(string,data){
+    console.log(string +" >>>>>>>>>>" +((data) ? JSON.stringify(data):""))
+}
 
 
 module.exports = router;
